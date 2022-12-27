@@ -1,0 +1,161 @@
+## What is stellar
+
+Stellar is an open-source protocol for financial transactions. It aims to become the single network where the current financial system can be hosted. Stellar converts digital currency into lumens
+
+## Who is an Anchor
+
+Anchors are trusted units that issue digital credits in exchange for assets on the Stellar network. They do this in exchange for deposits of an asset with anchors. Anchors also control the fees for their services on the network.
+
+Anchors are responsible for enabling real-world asset exchange while maintaining wallet balances. They use a distributed exchange to ensure this exchange. This exchange maintains a book for every traded asset pair. You can use Anchors to issue any type of assets including stocks, currencies, crypto assets, etc.
+
+
+## What is Polaris
+
+Polaris is an extendable django app for Stellar Ecosystem Proposal (SEP) implementations maintained by the Stellar Development Foundation (SDF). It provides an API that developers can use to customise the way the anchor server responds. Using Polaris, you can run a web server supporting any combination of SEP-1, 6, 10, 12, 24, 31, & 38.
+
+## What is SEP 1
+
+SEP 1 is a toml file that describes the information about your organisation. the organisation that owns the anchor, it gives details about the asset
+
+
+## What is a virtual environment
+
+A virtual environment is a Python environment such that the Python interpreter, libraries and scripts installed into it are isolated from those installed on the system and in other virtual environments.
+
+## Install a virtual environment
+
+open your terminal on any folder of your choice and enter the following command
+
+`` sudo pip3 install virtualenv ``
+
+After installation, create a virtual environment with the command
+
+`` virtualenv stellar_env ``
+
+here i named it stellar_env, but you can give it any name of your choice, you might need to add env at the end for clarity sake
+
+
+## Install django-polaris
+
+`` pip install django django-polaris ``
+
+## Start the project using
+
+`` django-admin startproject anchor ``
+
+We are the giving the project a name called anchor here
+
+## Install cors-headers
+
+django-cors allows the client to easily connect to the backend API. It allows request to our sep23 service
+
+``pip install django-cors-headers``
+
+## Configure settings
+
+in the anchor folder open the settings.py file and add the following to the apps to the installed apps list
+
+```
+
+INSTALLED_APPS = [
+    ...,
+    "corsheaders",
+    "rest_framework",
+    "anchor",
+    "polaris"
+]
+
+```
+
+Add CorsMiddleware to your settings.MIDDLEWARE. It should be listed above other middleware or at the highest points of your middlewares.
+
+
+```
+MIDDLEWARE = [
+    ...,
+    'corsheaders.middleware.CorsMiddleware',
+    ...
+]
+```
+
+Polaris will accept requests from all origins to its endpoints. It does this by adding corsheaders signal that checks the request URI. However this does not change the CORS policy for any other endpoint on the server. You can change this functionality using the settings listed in the
+
+
+## Set Environment Variables
+
+create a .env file at the root if the project
+
+`` touch .env ``
+
+In that .env file, add the following environment variables
+
+```
+ACTIVE_SEPS=
+HOST_URL=http://localhost:8000
+LOCAL_MODE=1
+
+```
+
+## Add polaris endpoints
+
+In your anchor folder in the root of the project, open the urls.py file, and add the following
+
+```
+import polaris.urls
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+   path('admin/', admin.site.urls), 
+    path("", include(polaris.urls)),
+]
+
+```
+In the above code 
+
+- We imported the urls of the polaris app installed earlier
+- we imported django custom admin
+- we imported django path (for urls path navigations)
+- we imported include to include the urls of whatever app we installed
+
+
+## Configure the Database
+
+Polaris works with all databases supported by Django. Django’s template code uses SQLite3 by default, but you can install your choice. it's not ideal to use sqlite in production, but for testing purpose we'll be using it
+
+
+## Migrate you database
+
+`` python manage.py migrate ``
+
+if your database doesn't exist yet, migrate creates all the necessary tables to match your model definitions.
+
+Otherwise if the database already exists, migrate updates the existing table definitions to match the model definitions -- i.e. maybe you added a field to one of your models, so migrate would add that column to the database table.
+
+## Make Migrations
+
+You should think of migrations as a version control system for your database schema. makemigrations is responsible for packaging up your model changes into individual migration files - analogous to commits - and migrate is responsible for applying those to your database.
+
+
+
+## Publish a Stellar TOML File
+
+The stellar.toml file is used to provide a common place where the Internet can find information about your organization’s Stellar integration. By setting the home_domain of your Stellar account to the domain that hosts your stellar.toml, you can create a definitive link between this information and that account. Any website can publish Stellar network information, and the stellar.toml is designed to be readable by both humans and machines.
+
+If you are an anchor or issuer, the stellar.toml file serves a very important purpose: it allows you to publish information about your organization and token(s) that help to legitimize your offerings. Clients and exchanges can use this information to decide whether a token should be listed. Fully and truthfully disclosing contact and business information is an essential step in responsible token issuance.
+
+
+
+
+
+## creating SIGNING_SEED
+
+on your terninal enter the command python3 to open the shell
+
+``` 
+>> from stellar_sdk import keypair 
+>> kp = Keypair.random() 
+>> kp.secret
+
+```
+copy the secrete key that comes out and paste it in your env SIGNING_SEED
