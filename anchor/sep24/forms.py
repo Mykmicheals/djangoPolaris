@@ -13,6 +13,6 @@ class AddressForm(forms.Form):
     zip_code = forms.CharField()
 
 
-class BankAccount(forms.Form):
-    account_number = forms.CharField()
+# class BankAccount(forms.Form):
+#     account_number = forms.CharField()
  
